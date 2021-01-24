@@ -54,9 +54,86 @@ int power( int x, int n)
         return x*power(x,n-1);
 }
 //abcdefghijklmnopqrstuvwxyz//
-const int mx=2000005;
-bool pr[mx];
-int x[15];
+const double infd=1e100,epsd=1e-12;
+
+struct point
+{
+    double x,y;
+    void read()
+    {
+        scanf("%lf%lf",&x,&y);
+    }
+    double r()
+    {
+        return sqrt(x*x+y*y);
+    }
+    void print()
+    {
+        printf("%f %f\n",x,y);
+    }
+    bool operator<(const point &r)const
+    {
+        if(x<r.x) return 1;
+        if(x>r.x) return 0;
+        return y<r.y;
+    }
+    point operator-(point &r)
+    {
+        point res= {x-r.x,y-r.y};
+        return res;
+    }
+    double slope()
+    {
+        if(x==0.0 && y==0.0) return -infd;
+        if(x==0.0) return infd;
+        return y/x;
+    }
+    double operator* (const point &r)
+    {
+        return x*r.y-y*r.x;
+    }
+    double dist_to(point &r)
+    {
+        return sqrt(sqr(x-r.x)+sqr(y-r.y));
+    }
+};
+
+point O;
+bool byslope(point l,point r)
+{
+    double ls=(l-O).slope(),rs=(r-O).slope();
+    if(ls<rs)return 1;
+    if(ls>rs)return 0;
+    return l.dist_to(O)<r.dist_to(O);
+}
+
+vector<point> convex_hull(point *p,int n)
+{
+    if(n<=2) return vector<point>(p,p+n);
+    sort(p,p+n);
+    O=p[0];
+    sort(p+1,p+n,byslope);
+    vector<point> hull;
+    for(int i=0;i<n;i++)
+    {
+        if(i<3)hull.pb(p[i]);
+        else
+        {
+            int sz=hull.size();
+            while(sz>=2 && (p[i]-hull[sz-2])*(hull[sz-1]-hull[sz-2])>=0)
+                {
+                    hull.pop_back();
+                    sz--;
+                }
+            hull.pb(p[i]);
+        }
+    }
+    return hull;
+}
+
+vector<point> v;
+int nn;
+point p[100010];
 
 main()
 {
@@ -64,38 +141,14 @@ main()
     freopen("in.txt","r",stdin);
     freopen("out.txt","w",stdout);
     #endif // CP
-    int p=in(),q=in(),ans=1;
-    int a,b,i,j,k=1,ln,t;
-    ln=sqrt(mx)+5;
-    mem(pr,0);
-    for(i=2;i<=ln;i+=k)
+    nn=in();
+    for(int i=0;i<nn;i++)
     {
-        if(pr[i]==0){
-                //cout<<i<<endl;
-        for(j=i*i;j<=mx;j+=i)
-            pr[j]=1;
-        }
-        if(i==3) k=2;
+        p[i].read();
     }
-    a=0,b=1;
-    for(i=2;i<=mx;i++)
-    {
-        if(!pr[i]) a++;
-        ln=0,k=0;
-        j=i;
-        while(j!=0)
-        {
-            x[k++]=j%10;
-            j/=10;
-            ln++;
-        }
-        for(k=0;k<ln/2;k++)
-            if(x[k]!=x[ln-1-k]) break;
-        if(k==(ln/2)) b++;
-        if((q*a)<=(p*b))
-            ans=i;
-    }
-    printf("%d\n",ans);
-    return 0;
+
+    v=convex_hull(p,nn);
+    for(int i=0;i<v.size();i++)
+        v[i].print();
 }
 

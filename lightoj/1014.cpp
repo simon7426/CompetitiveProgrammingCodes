@@ -54,48 +54,41 @@ int power( int x, int n)
         return x*power(x,n-1);
 }
 //abcdefghijklmnopqrstuvwxyz//
-const int mx=2000005;
-bool pr[mx];
-int x[15];
-
+vi ans1,ans2;
 main()
 {
     #ifdef CP
     freopen("in.txt","r",stdin);
     freopen("out.txt","w",stdout);
     #endif // CP
-    int p=in(),q=in(),ans=1;
-    int a,b,i,j,k=1,ln,t;
-    ln=sqrt(mx)+5;
-    mem(pr,0);
-    for(i=2;i<=ln;i+=k)
+    int tcc=in(),tc;
+    for(tc=1;tc<=tcc;tc++)
     {
-        if(pr[i]==0){
-                //cout<<i<<endl;
-        for(j=i*i;j<=mx;j+=i)
-            pr[j]=1;
-        }
-        if(i==3) k=2;
-    }
-    a=0,b=1;
-    for(i=2;i<=mx;i++)
-    {
-        if(!pr[i]) a++;
-        ln=0,k=0;
-        j=i;
-        while(j!=0)
+        ans1.clear();
+        ans2.clear();
+        int p=in(),l=in();
+        int n=p-l,i;
+        int li=sqrt(n)+1;
+        for(i=1;(ll)i*(ll)i<(ll)n;i++)
         {
-            x[k++]=j%10;
-            j/=10;
-            ln++;
+            if(n%i==0)
+                {
+                    if(i>l)ans1.pb(i);
+                    if((n/i)>l)ans2.pb(n/i);
+                }
         }
-        for(k=0;k<ln/2;k++)
-            if(x[k]!=x[ln-1-k]) break;
-        if(k==(ln/2)) b++;
-        if((q*a)<=(p*b))
-            ans=i;
+        if((ll)i*(ll)i==(ll)n&&i>l)ans1.pb(i);
+        printf("Case %d:",tc);
+        if(ans1.empty()&&ans2.empty())
+            printf(" impossible");
+        else
+        {
+            for(i=0;i<ans1.size();i++)
+                printf(" %d",ans1[i]);
+            for(i=ans2.size()-1;i>=0;i--)
+                printf(" %d",ans2[i]);
+        }
+        printf("\n");
     }
-    printf("%d\n",ans);
-    return 0;
 }
 

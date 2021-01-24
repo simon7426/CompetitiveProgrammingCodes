@@ -1,6 +1,6 @@
 #include<bits/stdc++.h>
 using namespace std;
-
+//#define CP
 typedef long long ll;
 typedef vector<int> vi;
 typedef vector<ll> vl;
@@ -23,7 +23,7 @@ const double PI = acos(-1);
 const double eps = 1e-9;
 const int inf = 2000000000;
 const ll infLL = 9000000000000000000;
-#define MOD 1000000007
+#define MOD 100000007
 //#define harmonic(n) 0.57721566490153286l+log(n)
 
 #define mem(a,b) memset(a, b, sizeof(a) )
@@ -42,60 +42,91 @@ inline ll inl() { ll x;scanf("%I64d",&x); return x;}
 inline double ind() { double x;scanf("%lf",&x);return x;}
 
 int gcd(int a,int b) { return b==0 ? a:gcd(b,a%b);}
-int power( int x, int n)
+ll power( ll x, ll n)
 {
     if(n==0)return 1;
     else if(n%2==0)
     {
-        int y=power(x,n/2);
-        return y*y;
+        ll y=power(x,n/2);
+        return (y*y)%MOD;
     }
     else
-        return x*power(x,n-1);
+        return (x*power(x,n-1))%MOD;
 }
 //abcdefghijklmnopqrstuvwxyz//
-const int mx=2000005;
-bool pr[mx];
-int x[15];
-
+ll fa[1000020],ifa[1000020],res;
+int n,k,ra[12],dp[1<<12];
+ll ncr(ll x,ll y)
+{
+    if(y>x) return 0;
+    ll lol=(ifa[y]*ifa[x-y])%MOD;
+    return (fa[x]*lol)%MOD;
+}
+void fun(ll cur)
+{
+    int cnt=__builtin_popcount(cur);
+    if(cnt>n||dp[cur]==1) return;
+    ll tmp=k;
+    for(int i=0;i<n;i++)
+    {
+        if(cur&(1<<i))
+        {
+            tmp-=ra[i];
+        }
+    }
+    if(tmp>=0)
+    {
+        if(cnt&1)
+        {
+            res-=ncr(tmp+n-1,n-1);
+            res%=MOD;
+            if(res<0)res+=MOD;
+        }
+        else
+        {
+            res+=ncr(tmp+n-1,n-1);
+            res%=MOD;
+        }
+    }
+    dp[cur]=1;
+    for(int i=0;i<n;i++)
+    {
+        if((cur&(1<<i))==0)
+        {
+          fun(cur|(1<<i));
+        }
+    }
+}
 main()
 {
     #ifdef CP
     freopen("in.txt","r",stdin);
     freopen("out.txt","w",stdout);
     #endif // CP
-    int p=in(),q=in(),ans=1;
-    int a,b,i,j,k=1,ln,t;
-    ln=sqrt(mx)+5;
-    mem(pr,0);
-    for(i=2;i<=ln;i+=k)
+    fa[0]=fa[1]=1;
+    ifa[0]=ifa[1]=1;
+    for(int i=2;i<1000020;i++)
     {
-        if(pr[i]==0){
-                //cout<<i<<endl;
-        for(j=i*i;j<=mx;j+=i)
-            pr[j]=1;
-        }
-        if(i==3) k=2;
+        fa[i]=(i*fa[i-1])%MOD;
+        ifa[i]=(power(i,MOD-2)*ifa[i-1])%MOD;
+        fa[i]%=MOD;
+        ifa[i]%=MOD;
     }
-    a=0,b=1;
-    for(i=2;i<=mx;i++)
+    int tcc=in();
+    for(int tc=1;tc<=tcc;tc++)
     {
-        if(!pr[i]) a++;
-        ln=0,k=0;
-        j=i;
-        while(j!=0)
-        {
-            x[k++]=j%10;
-            j/=10;
-            ln++;
-        }
-        for(k=0;k<ln/2;k++)
-            if(x[k]!=x[ln-1-k]) break;
-        if(k==(ln/2)) b++;
-        if((q*a)<=(p*b))
-            ans=i;
-    }
-    printf("%d\n",ans);
-    return 0;
-}
+        n=in(),k=in();
 
+        int x,y;
+        for(int i=0;i<n;i++)
+        {
+            x=in();y=in();
+            ra[i]=y-x+1;
+            k-=x;
+        }
+        res=0;
+        mem(dp,-1);
+        fun(0);
+        printf("Case %d: %lld\n",tc,res);
+    }
+}

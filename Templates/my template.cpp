@@ -2,6 +2,7 @@
 using namespace std;
 
 typedef long long ll;
+typedef unsigned long long ull;
 typedef vector<int> vi;
 typedef vector<ll> vl;
 typedef vector<vi> vvi;
@@ -41,6 +42,16 @@ inline int in() { int x; scanf("%d", &x); return x; }
 inline ll inl() { ll x;scanf("%I64d",&x); return x;}
 inline double ind() { double x;scanf("%lf",&x);return x;}
 
+inline bool EQ(double a, double b) { return fabs(a-b) < 1e-9; }
+inline bool isLeapYear(ll year) { return (year%400==0) || (year%4==0 && year%100!=0); }
+inline void normal(ll &a) { a %= MOD; (a < 0) && (a += MOD); }
+inline ll modMul(ll a, ll b) { a %= MOD, b %= MOD; normal(a), normal(b); return (a*b)%MOD; }
+inline ll modAdd(ll a, ll b) { a %= MOD, b %= MOD; normal(a), normal(b); return (a+b)%MOD; }
+inline ll modSub(ll a, ll b) { a %= MOD, b %= MOD; normal(a), normal(b); a -= b; normal(a); return a; }
+inline ll modPow(ll b, ll p) { ll r = 1; while(p) { if(p&1) r = modMul(r, b); b = modMul(b, b); p >>= 1; } return r; }
+inline ll modInverse(ll a) { return modPow(a, MOD-2); }
+inline ll modDiv(ll a, ll b) { return modMul(a, modInverse(b)); }
+
 int gcd(int a,int b) { return b==0 ? a:gcd(b,a%b);}
 int power( int x, int n)
 {
@@ -54,9 +65,6 @@ int power( int x, int n)
         return x*power(x,n-1);
 }
 //abcdefghijklmnopqrstuvwxyz//
-const int mx=2000005;
-bool pr[mx];
-int x[15];
 
 main()
 {
@@ -64,38 +72,4 @@ main()
     freopen("in.txt","r",stdin);
     freopen("out.txt","w",stdout);
     #endif // CP
-    int p=in(),q=in(),ans=1;
-    int a,b,i,j,k=1,ln,t;
-    ln=sqrt(mx)+5;
-    mem(pr,0);
-    for(i=2;i<=ln;i+=k)
-    {
-        if(pr[i]==0){
-                //cout<<i<<endl;
-        for(j=i*i;j<=mx;j+=i)
-            pr[j]=1;
-        }
-        if(i==3) k=2;
-    }
-    a=0,b=1;
-    for(i=2;i<=mx;i++)
-    {
-        if(!pr[i]) a++;
-        ln=0,k=0;
-        j=i;
-        while(j!=0)
-        {
-            x[k++]=j%10;
-            j/=10;
-            ln++;
-        }
-        for(k=0;k<ln/2;k++)
-            if(x[k]!=x[ln-1-k]) break;
-        if(k==(ln/2)) b++;
-        if((q*a)<=(p*b))
-            ans=i;
-    }
-    printf("%d\n",ans);
-    return 0;
 }
-

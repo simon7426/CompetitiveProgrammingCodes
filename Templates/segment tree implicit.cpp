@@ -54,48 +54,68 @@ int power( int x, int n)
         return x*power(x,n-1);
 }
 //abcdefghijklmnopqrstuvwxyz//
-const int mx=2000005;
-bool pr[mx];
-int x[15];
+struct node
+{
+    ll sum;
+    node *l,*r;
+    node() : sum(0),l(NULL),r(NULL) {}
+};
 
+void add(node *v,int b,int e,int l,int r,ll val)
+{
+    if(l>r||r<b||l>e)
+        return;
+    if(l<=b && e<=r)
+    {
+        v->sum+=val;
+        return;
+    }
+    int mid=(b+e)>>1;
+    if(v->l==NULL)
+        v->l=new node();
+    if(v->r==NULL)
+        v->r=new node();
+    add(v->l,b,mid,l,r,val);
+    add(v->r,mid+1,e,l,r,val);
+}
+
+ll get(node *v,int l,int r,int pos)
+{
+    if(!v||l>r||pos<l||pos>r)
+        return 0;
+    if(l==r)
+        return v->sum;
+    int mid=(l+r)>>1;
+    return v->sum+get(v->l,l,mid,pos)+get(v->r,mid+1,r,pos);
+}
+int n,m,x,y;
 main()
 {
     #ifdef CP
     freopen("in.txt","r",stdin);
     freopen("out.txt","w",stdout);
     #endif // CP
-    int p=in(),q=in(),ans=1;
-    int a,b,i,j,k=1,ln,t;
-    ln=sqrt(mx)+5;
-    mem(pr,0);
-    for(i=2;i<=ln;i+=k)
+    node *root = new node();
+    scanf("%d %d",&n,&m);
+    for(int i=0;i<n;i++)
     {
-        if(pr[i]==0){
-                //cout<<i<<endl;
-        for(j=i*i;j<=mx;j+=i)
-            pr[j]=1;
-        }
-        if(i==3) k=2;
+        scanf("%d",&x);
+        add(root,0,n-1,i,i,x);
     }
-    a=0,b=1;
-    for(i=2;i<=mx;i++)
+    int qt,l,r;
+    for(int i=0;i<m;i++)
     {
-        if(!pr[i]) a++;
-        ln=0,k=0;
-        j=i;
-        while(j!=0)
+        scanf("%d",&qt);
+        if(qt==1)
         {
-            x[k++]=j%10;
-            j/=10;
-            ln++;
+            scanf("%d%d%d",&l,&r,&x);
+            add(root,0,n-1,l,r,x);
         }
-        for(k=0;k<ln/2;k++)
-            if(x[k]!=x[ln-1-k]) break;
-        if(k==(ln/2)) b++;
-        if((q*a)<=(p*b))
-            ans=i;
+        else
+        {
+            scanf("%d",&x);
+            printf("%I64d\n",get(root,0,n-1,x));
+        }
     }
-    printf("%d\n",ans);
-    return 0;
 }
 

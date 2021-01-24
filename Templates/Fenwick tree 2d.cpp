@@ -54,9 +54,32 @@ int power( int x, int n)
         return x*power(x,n-1);
 }
 //abcdefghijklmnopqrstuvwxyz//
-const int mx=2000005;
-bool pr[mx];
-int x[15];
+
+const int maxn=1050;
+int n,m;
+int qn;
+int f[maxn][maxn];
+
+void update(int x,int y,int val)
+{
+    for(int i=x;i<=n;i=i|(i+1))
+        for(int j=y;j<=n;j=j|(j+1))
+        f[i][j]+=val;
+}
+
+int getsum(int x,int y)
+{
+    int res=0;
+    for(int i=x;i>0;i=(i&(i+1))-1)
+        for(int j=y;j>0;j=(j&(j+1))-1)
+        res+=f[i][j];
+    return res;
+}
+
+int getsum(int fx,int fy,int tx,int ty)
+{
+    return getsum(tx,ty)-getsum(tx,fy-1)-getsum(fx-1,ty)+getsum(fx-1,fy-1);
+}
 
 main()
 {
@@ -64,38 +87,34 @@ main()
     freopen("in.txt","r",stdin);
     freopen("out.txt","w",stdout);
     #endif // CP
-    int p=in(),q=in(),ans=1;
-    int a,b,i,j,k=1,ln,t;
-    ln=sqrt(mx)+5;
-    mem(pr,0);
-    for(i=2;i<=ln;i+=k)
+    scanf("%d %d",&n,&m);
+    int i,j;
+    for(i=0;i<n;i++)
+        for(j=0;j<n;j++)
     {
-        if(pr[i]==0){
-                //cout<<i<<endl;
-        for(j=i*i;j<=mx;j+=i)
-            pr[j]=1;
-        }
-        if(i==3) k=2;
+        int t;
+        scanf("%d",&t);
+        update(i+1,j+1,t);
     }
-    a=0,b=1;
-    for(i=2;i<=mx;i++)
+    int q,typ,x,y,t;
+    scanf("%d",&q);
+    int fx,fy,tx,ty;
+    for(i=0;i<q;i++)
     {
-        if(!pr[i]) a++;
-        ln=0,k=0;
-        j=i;
-        while(j!=0)
+        scanf("%d",&typ);
+        if(ty==1)
         {
-            x[k++]=j%10;
-            j/=10;
-            ln++;
+            scanf("%d %d %d",&x,&y,&t);
+            update(x,y,t);
         }
-        for(k=0;k<ln/2;k++)
-            if(x[k]!=x[ln-1-k]) break;
-        if(k==(ln/2)) b++;
-        if((q*a)<=(p*b))
-            ans=i;
+        else
+        {
+            scanf("%d%d%d%d",&fx,&fy,&tx,&ty);
+            if(fx>tx) swap(fx,tx);
+            if(fy>ty) swap(fy,ty);
+            printf("%d\n",getsum(fx,fy,tx,ty));
+        }
     }
-    printf("%d\n",ans);
     return 0;
 }
 

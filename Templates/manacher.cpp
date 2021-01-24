@@ -54,9 +54,13 @@ int power( int x, int n)
         return x*power(x,n-1);
 }
 //abcdefghijklmnopqrstuvwxyz//
-const int mx=2000005;
-bool pr[mx];
-int x[15];
+
+const int maxn=105000;
+string s;
+int n;
+int odd[maxn],even[maxn];
+int l,r;
+ll ans;
 
 main()
 {
@@ -64,38 +68,54 @@ main()
     freopen("in.txt","r",stdin);
     freopen("out.txt","w",stdout);
     #endif // CP
-    int p=in(),q=in(),ans=1;
-    int a,b,i,j,k=1,ln,t;
-    ln=sqrt(mx)+5;
-    mem(pr,0);
-    for(i=2;i<=ln;i+=k)
+    getline(cin,s);
+    n=s.length();
+
+    ///odd
+
+    l=r=-1;
+    for(int i=0;i<n;i++)
     {
-        if(pr[i]==0){
-                //cout<<i<<endl;
-        for(j=i*i;j<=mx;j+=i)
-            pr[j]=1;
-        }
-        if(i==3) k=2;
-    }
-    a=0,b=1;
-    for(i=2;i<=mx;i++)
-    {
-        if(!pr[i]) a++;
-        ln=0,k=0;
-        j=i;
-        while(j!=0)
+        int cur=1;
+        if(i<r)
+            cur=min(r-i+1,odd[l+r-i]);
+        while(i+cur<n && i-cur >=0 && s[i-cur]==s[i+cur])
+            cur++;
+        odd[i]=cur;
+        if(i+cur-1>r)
         {
-            x[k++]=j%10;
-            j/=10;
-            ln++;
+            l=i-cur+1;
+            r=i+cur-1;
         }
-        for(k=0;k<ln/2;k++)
-            if(x[k]!=x[ln-1-k]) break;
-        if(k==(ln/2)) b++;
-        if((q*a)<=(p*b))
-            ans=i;
     }
-    printf("%d\n",ans);
-    return 0;
+
+    ///even case///
+    l=r=-1;
+    for(int i=0;i<n;i++)
+    {
+        int cur=0;
+        if(i<r)
+            cur=min(r-i+1,even[l+r-i+1]);
+        while(i+cur<n && i-1-cur>=0 && s[i-1-cur]== s[i+cur])
+            cur++;
+        even[i]=cur;
+        if(i+cur-1>r)
+        {
+            l=i-cur;
+            r=i+cur-1;
+        }
+    }
+
+    for(int i=0;i<n;i++)
+    {
+        if(odd[i]>1)
+        {
+            ans+=odd[i]-1;
+        }
+        if(even[i])
+            ans+=even[i];
+    }
+
+    printf("%lld\n",ans);
 }
 

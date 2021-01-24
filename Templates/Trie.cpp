@@ -54,9 +54,52 @@ int power( int x, int n)
         return x*power(x,n-1);
 }
 //abcdefghijklmnopqrstuvwxyz//
-const int mx=2000005;
-bool pr[mx];
-int x[15];
+
+struct node
+{
+    bool fin;
+    node *chi[27];
+    node()
+    {
+        fin=false;
+        for(int i=0;i<26;i++)
+            chi[i]=NULL;
+    }
+}*root;
+
+void insert(char *str,int len)
+{
+    node *cur=root;
+    for(int i=0;i<len;i++)
+    {
+        int x=str[i]-'a';
+        if(cur->chi[x]==NULL)
+            cur->chi[x]=new node();
+        cur=cur->chi[x];
+    }
+    cur->fin=true;
+}
+
+bool search(char *str,int len)
+{
+    node *cur=root;
+    for(int i=0;i<len;i++)
+    {
+        int x=str[i]-'a';
+        if(cur->chi[x]==NULL)
+            return false;
+        cur=cur->chi[x];
+    }
+    return cur->fin;
+}
+
+void del(node *cur)
+{
+    for(int i=0;i<26;i++)
+        if(cur->chi[i])
+            del(cur->chi[i]);
+    delete(cur);
+}
 
 main()
 {
@@ -64,38 +107,25 @@ main()
     freopen("in.txt","r",stdin);
     freopen("out.txt","w",stdout);
     #endif // CP
-    int p=in(),q=in(),ans=1;
-    int a,b,i,j,k=1,ln,t;
-    ln=sqrt(mx)+5;
-    mem(pr,0);
-    for(i=2;i<=ln;i+=k)
+    root=new node();
+    int x;
+    cin>>x;
+    for(int i=0;i<x;i++)
     {
-        if(pr[i]==0){
-                //cout<<i<<endl;
-        for(j=i*i;j<=mx;j+=i)
-            pr[j]=1;
-        }
-        if(i==3) k=2;
+        char s[1010];
+        cin>>s;
+        insert(s,strlen(s));
     }
-    a=0,b=1;
-    for(i=2;i<=mx;i++)
+    int q;
+    cin>>q;
+    for(int i=0;i<q;i++)
     {
-        if(!pr[i]) a++;
-        ln=0,k=0;
-        j=i;
-        while(j!=0)
-        {
-            x[k++]=j%10;
-            j/=10;
-            ln++;
-        }
-        for(k=0;k<ln/2;k++)
-            if(x[k]!=x[ln-1-k]) break;
-        if(k==(ln/2)) b++;
-        if((q*a)<=(p*b))
-            ans=i;
+        char s[1010];
+        cin>>s;
+        if(search(s,strlen(s)))
+            cout<<"here"<<endl;
+        else cout<<"nope"<<endl;
     }
-    printf("%d\n",ans);
     return 0;
 }
 

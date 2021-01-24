@@ -54,9 +54,74 @@ int power( int x, int n)
         return x*power(x,n-1);
 }
 //abcdefghijklmnopqrstuvwxyz//
-const int mx=2000005;
-bool pr[mx];
-int x[15];
+const int maxn=105000;
+
+struct node
+{
+    int next[26];
+    int len;
+    int sufflink;
+    int num;
+};
+
+int len;
+char s[maxn];
+node tree[maxn];
+int num;
+int suff;
+ll ans;
+
+bool addletter(int pos)
+{
+    int cur=suff,curlen=0;
+    int let=s[pos]-'a';
+
+    while(true)
+    {
+        curlen=tree[cur].len;
+        if(pos-1-curlen>=0 && s[pos-1-curlen]==s[pos])
+            break;
+        cur=tree[cur].sufflink;
+    }
+    if(tree[cur].next[let])
+    {
+        suff=tree[cur].next[let];
+        return false;
+    }
+
+    num++;
+
+    suff=num;
+    tree[num].len=tree[cur].len+2;
+    tree[cur].next[let]=num;
+
+    if(tree[num].len==1)
+    {
+        tree[num].sufflink=2;
+        tree[num].num=1;
+        return true;
+    }
+    while(true)
+    {
+        cur=tree[cur].sufflink;
+        curlen=tree[cur].len;
+        if(pos-1-curlen>=0 && s[pos-1-curlen]==s[pos])
+        {
+            tree[num].sufflink=tree[cur].next[let];
+            break;
+        }
+    }
+    tree[num].num=1+tree[tree[num].sufflink].num;
+    return true;
+}
+
+void inittree()
+{
+    num=2;suff=2;
+    tree[1].len=-1;
+    tree[1].sufflink=1;
+    tree[2].len=0;tree[2].sufflink=1;
+}
 
 main()
 {
@@ -64,38 +129,15 @@ main()
     freopen("in.txt","r",stdin);
     freopen("out.txt","w",stdout);
     #endif // CP
-    int p=in(),q=in(),ans=1;
-    int a,b,i,j,k=1,ln,t;
-    ln=sqrt(mx)+5;
-    mem(pr,0);
-    for(i=2;i<=ln;i+=k)
+    gets(s);
+    len=strlen(s);
+    inittree();
+
+    for(int i=0;i<len;i++)
     {
-        if(pr[i]==0){
-                //cout<<i<<endl;
-        for(j=i*i;j<=mx;j+=i)
-            pr[j]=1;
-        }
-        if(i==3) k=2;
+        addletter(i);
+        ans+=tree[suff].num;
     }
-    a=0,b=1;
-    for(i=2;i<=mx;i++)
-    {
-        if(!pr[i]) a++;
-        ln=0,k=0;
-        j=i;
-        while(j!=0)
-        {
-            x[k++]=j%10;
-            j/=10;
-            ln++;
-        }
-        for(k=0;k<ln/2;k++)
-            if(x[k]!=x[ln-1-k]) break;
-        if(k==(ln/2)) b++;
-        if((q*a)<=(p*b))
-            ans=i;
-    }
-    printf("%d\n",ans);
-    return 0;
+    printf("%lld\n",ans);
 }
 

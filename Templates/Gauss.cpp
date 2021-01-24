@@ -20,8 +20,8 @@ typedef vector<pll> vll;
 #define endl '\n'
 
 const double PI = acos(-1);
-const double eps = 1e-9;
-const int inf = 2000000000;
+//const double eps = 1e-9;
+//const int inf = 2000000000;
 const ll infLL = 9000000000000000000;
 #define MOD 1000000007
 //#define harmonic(n) 0.57721566490153286l+log(n)
@@ -54,48 +54,93 @@ int power( int x, int n)
         return x*power(x,n-1);
 }
 //abcdefghijklmnopqrstuvwxyz//
-const int mx=2000005;
-bool pr[mx];
-int x[15];
+const int maxn=150;
+const int INF=1<<20;
+const double eps=1e-6;
 
+int n,m;
+double a[maxn][maxn];
+double ans[maxn];
+
+int gauss(int n,int m,double a[maxn][maxn],double ans[maxn])
+{
+    int pos[maxn];
+    memset(pos,0,sizeof pos);
+
+    bool parameters=false;
+    int row=1,col=1;
+
+    for(;row<=n && col <=m; col++)
+    {
+        int pivot=row;
+        for(int i=row;i<=n;i++)
+        {
+            if(abs(a[i][col])>abs(a[pivot][col]))
+                pivot=i;
+        }
+        if(abs(a[pivot][col])<eps)
+        {
+            parameters=true;
+            continue;
+        }
+        for(int i=1;i<=m+1;i++)
+            swap(a[row][i],a[pivot][i]);
+        pos[col]=row;
+
+        double div = a[row][col];
+        for(int i=1;i<=m+1;i++)
+            a[row][i]/=div;
+        for(int i=1;i<=n;i++)
+        {
+            if(i==row)
+                continue;
+            div=a[i][col];
+            for(int j=1;j<=m+1;j++)
+                a[i][j]-=a[row][j]*div;
+        }
+        row++;
+    }
+    for(int i=1;i<=m;i++)
+    {
+        if(pos[i]!=0)
+            ans[i]=a[pos[i]][m+1];
+        else ans[i]=0;
+    }
+
+    for(int i=1;i<=n;i++)
+    {
+        double sum=0;
+        for(int j=1;j<=m;j++)
+            sum+=ans[j]*a[i][j];
+        if(abs(sum-a[i][m+1]>eps))
+            return 0;
+    }
+    if(parameters)
+        return INF;
+    return 1;
+}
 main()
 {
     #ifdef CP
     freopen("in.txt","r",stdin);
     freopen("out.txt","w",stdout);
     #endif // CP
-    int p=in(),q=in(),ans=1;
-    int a,b,i,j,k=1,ln,t;
-    ln=sqrt(mx)+5;
-    mem(pr,0);
-    for(i=2;i<=ln;i+=k)
+
+    scanf("%d",&n);
+    m=n;
+    for(int i=1;i<=n;i++)
     {
-        if(pr[i]==0){
-                //cout<<i<<endl;
-        for(j=i*i;j<=mx;j+=i)
-            pr[j]=1;
-        }
-        if(i==3) k=2;
+        for(int j=1;j<=m+1;j++)
+            scanf("%lf",&a[i][j]);
     }
-    a=0,b=1;
-    for(i=2;i<=mx;i++)
+    if(gauss(n,m,a,ans)==1)
     {
-        if(!pr[i]) a++;
-        ln=0,k=0;
-        j=i;
-        while(j!=0)
+        for(int i=1;i<=m;i++)
         {
-            x[k++]=j%10;
-            j/=10;
-            ln++;
+            ans[i]=floor(ans[i]+0.5);
+            printf("%.0f ",ans[i]);
         }
-        for(k=0;k<ln/2;k++)
-            if(x[k]!=x[ln-1-k]) break;
-        if(k==(ln/2)) b++;
-        if((q*a)<=(p*b))
-            ans=i;
     }
-    printf("%d\n",ans);
     return 0;
 }
 

@@ -54,48 +54,65 @@ int power( int x, int n)
         return x*power(x,n-1);
 }
 //abcdefghijklmnopqrstuvwxyz//
-const int mx=2000005;
-bool pr[mx];
-int x[15];
-
+int pri[1000010],cnt[1000010];
+void sieve()
+{
+    //printf("here\n");
+    for(int i=2;i<=1000010;i++)
+    {
+        pri[i]=1;
+        cnt[i]=0;
+    }
+    for(int i=2;i<1000010;i++)
+    {
+        if(pri[i]==1)
+        {
+            for(int j=i;j<1000010;j+=i)
+            {
+                pri[j]*=i;
+                cnt[j]++;
+            }
+        }
+    }
+}
 main()
 {
     #ifdef CP
     freopen("in.txt","r",stdin);
     freopen("out.txt","w",stdout);
     #endif // CP
-    int p=in(),q=in(),ans=1;
-    int a,b,i,j,k=1,ln,t;
-    ln=sqrt(mx)+5;
-    mem(pr,0);
-    for(i=2;i<=ln;i+=k)
+    sieve();
+    /*for(int i=0;i<100;i++)
     {
-        if(pr[i]==0){
-                //cout<<i<<endl;
-        for(j=i*i;j<=mx;j+=i)
-            pr[j]=1;
-        }
-        if(i==3) k=2;
-    }
-    a=0,b=1;
-    for(i=2;i<=mx;i++)
+        //printf("%d %d\n",pri[i],i);
+        if(pri[i]==i)
+            printf("%d ",i);
+    }*/
+    int tcc=in();
+    for(int tc=1;tc<=tcc;tc++)
     {
-        if(!pr[i]) a++;
-        ln=0,k=0;
-        j=i;
-        while(j!=0)
+        int n=in(),m=in();
+        if(n>m) swap(n,m);
+        printf("Case %d: ",tc);
+        if(n==0)
         {
-            x[k++]=j%10;
-            j/=10;
-            ln++;
+            if(m==0) printf("0\n");
+            else printf("1\n");
         }
-        for(k=0;k<ln/2;k++)
-            if(x[k]!=x[ln-1-k]) break;
-        if(k==(ln/2)) b++;
-        if((q*a)<=(p*b))
-            ans=i;
+        else
+        {
+            ll ans=(ll)m*(ll)n+2;
+            for(int i=2;i<=n;i++)
+            {
+                if(pri[i]==i)
+                {
+                    if(cnt[i]&1) ans-=(ll)(n/i)*(ll)(m/i);
+                    else ans+=(ll)(n/i)*(ll)(m/i);
+                }
+            }
+            printf("%lld\n",ans);
+        }
+
     }
-    printf("%d\n",ans);
-    return 0;
 }
 

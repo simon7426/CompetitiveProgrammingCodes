@@ -54,48 +54,56 @@ int power( int x, int n)
         return x*power(x,n-1);
 }
 //abcdefghijklmnopqrstuvwxyz//
-const int mx=2000005;
-bool pr[mx];
-int x[15];
-
+int a[15],n,m;
+ll ans=0;
+ll lcm(ll x,ll y) {return (x*y)/gcd(x,y);}
+ll dp[1<<16];
+void fun(int cur,int cnt,int mb)
+{
+    if(cnt>=mb) return;
+    if(dp[cur]!=-1) return;
+    int cal=__builtin_popcount(cur);
+    //printf("%d\n",cal);
+    ll tmp=1;
+    for(int i=0;i<m;i++)
+    {
+        if(cur&(1<<i))
+        {
+           // printf("%d ",a[i]);
+            tmp=lcm(tmp,a[i]);
+        }
+    }
+    //printf("%d\n",tmp);
+    if(cur!=0)
+    {
+        //printf("%d\n", cal);
+        if(cal&1) ans+=n/tmp;
+        else ans-=n/tmp;
+    }
+    for(int i=0;i<m;i++)
+    {
+        if(cur&(1<<i)) continue;
+        fun(cur|(1<<i),i,mb);
+    }
+    dp[cur]=1;
+    return;
+}
 main()
 {
     #ifdef CP
     freopen("in.txt","r",stdin);
     freopen("out.txt","w",stdout);
     #endif // CP
-    int p=in(),q=in(),ans=1;
-    int a,b,i,j,k=1,ln,t;
-    ln=sqrt(mx)+5;
-    mem(pr,0);
-    for(i=2;i<=ln;i+=k)
+    int tcc=in();
+    for(int tc=1;tc<=tcc;tc++)
     {
-        if(pr[i]==0){
-                //cout<<i<<endl;
-        for(j=i*i;j<=mx;j+=i)
-            pr[j]=1;
-        }
-        if(i==3) k=2;
+        ans=0;
+        n=in(),m=in();
+        for(int i=0;i<m;i++)
+            a[i]=in();
+        mem(dp,-1);
+        fun(0,0,m);
+        printf("Case %d: %lld\n",tc,n-ans);
     }
-    a=0,b=1;
-    for(i=2;i<=mx;i++)
-    {
-        if(!pr[i]) a++;
-        ln=0,k=0;
-        j=i;
-        while(j!=0)
-        {
-            x[k++]=j%10;
-            j/=10;
-            ln++;
-        }
-        for(k=0;k<ln/2;k++)
-            if(x[k]!=x[ln-1-k]) break;
-        if(k==(ln/2)) b++;
-        if((q*a)<=(p*b))
-            ans=i;
-    }
-    printf("%d\n",ans);
-    return 0;
 }
 

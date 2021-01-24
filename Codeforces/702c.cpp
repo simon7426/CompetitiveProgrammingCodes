@@ -54,9 +54,29 @@ int power( int x, int n)
         return x*power(x,n-1);
 }
 //abcdefghijklmnopqrstuvwxyz//
-const int mx=2000005;
-bool pr[mx];
-int x[15];
+ll a[100010];
+map<ll,int> v;
+ll n,m;
+
+bool check(ll r)
+{
+    //cout<<r<<" ";
+    int i,j,f=0;
+    for(i=0;i<n;i++)
+    {
+        auto it=v.lower_bound(a[i]-r);
+        if(it!=v.end()&&abs(a[i]-it->first)<=r) continue;
+        else
+        {
+            //cout<<it->first<<" "<<r<<endl;
+            f=1;
+            break;
+        }
+    }
+    //cout<<f<<endl;
+    if(f==0) return true;
+    return false;
+}
 
 main()
 {
@@ -64,38 +84,32 @@ main()
     freopen("in.txt","r",stdin);
     freopen("out.txt","w",stdout);
     #endif // CP
-    int p=in(),q=in(),ans=1;
-    int a,b,i,j,k=1,ln,t;
-    ln=sqrt(mx)+5;
-    mem(pr,0);
-    for(i=2;i<=ln;i+=k)
+    int i,j,t;
+    n=in(),m=in();
+    for(i=0;i<n;i++)
+        a[i]=in();
+    for(i=0;i<m;i++)
     {
-        if(pr[i]==0){
-                //cout<<i<<endl;
-        for(j=i*i;j<=mx;j+=i)
-            pr[j]=1;
-        }
-        if(i==3) k=2;
+        t=in();
+        v[t]=1;
     }
-    a=0,b=1;
-    for(i=2;i<=mx;i++)
+    ll low=0,high=2e9+10,mid,cnt=0;
+    while(high>=low)
     {
-        if(!pr[i]) a++;
-        ln=0,k=0;
-        j=i;
-        while(j!=0)
+        mid=(low+high)>>1;
+        ++cnt;
+        //cout<<low<<" "<<high<<" "<<mid<<" ";
+        //if(cnt==200) break;
+        if(high==mid)
         {
-            x[k++]=j%10;
-            j/=10;
-            ln++;
+            low=mid;break;
         }
-        for(k=0;k<ln/2;k++)
-            if(x[k]!=x[ln-1-k]) break;
-        if(k==(ln/2)) b++;
-        if((q*a)<=(p*b))
-            ans=i;
+        if(check(mid))
+            high=mid;
+        else
+            low=mid+1;
+
     }
-    printf("%d\n",ans);
-    return 0;
+    printf("%I64d\n",low);
 }
 

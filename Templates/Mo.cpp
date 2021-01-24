@@ -54,48 +54,59 @@ int power( int x, int n)
         return x*power(x,n-1);
 }
 //abcdefghijklmnopqrstuvwxyz//
-const int mx=2000005;
-bool pr[mx];
-int x[15];
+int a[200010], block[200010];
+int cnt[1000010];
+ll ans[200010];
+int n,q;
+ll res=0;
+struct node
+{
+    int l,r,id;
+    bool operator <(const node b)const
+    {
+        if(block[l]!=block[b.l])
+            return l<b.l;
+        if(block[l]&1) return r<b.r;
+        else return r>b.r;
+    }
+}qs[200010];
 
+void add(int x)
+{
+    cnt[x]++;
+    res+=(((ll)cnt[x]*(ll)cnt[x])-((ll)((ll)cnt[x]-1LL)*(ll)((ll)cnt[x]-1LL)))*(ll)x;
+}
+void del(int x)
+{
+    cnt[x]--;
+    res+=(((ll)cnt[x]*(ll)cnt[x])-((ll)((ll)cnt[x]+1LL)*(ll)((ll)cnt[x]+1LL)))*(ll)x;
+}
 main()
 {
     #ifdef CP
     freopen("in.txt","r",stdin);
     freopen("out.txt","w",stdout);
     #endif // CP
-    int p=in(),q=in(),ans=1;
-    int a,b,i,j,k=1,ln,t;
-    ln=sqrt(mx)+5;
-    mem(pr,0);
-    for(i=2;i<=ln;i+=k)
+    n=in(),q=in();
+    for(int i=1;i<=n;i++)a[i]=in();
+    for(int i=1;i<=q;i++)
     {
-        if(pr[i]==0){
-                //cout<<i<<endl;
-        for(j=i*i;j<=mx;j+=i)
-            pr[j]=1;
-        }
-        if(i==3) k=2;
+        qs[i].l=in(),qs[i].r=in(),qs[i].id=i;
     }
-    a=0,b=1;
-    for(i=2;i<=mx;i++)
+    int sz=sqrt(n);
+    for(int i=1;i<=n;i+=sz) block[i]=1;
+    for(int i=2;i<=n;i++) block[i]+=block[i-1];
+    sort(qs+1,qs+q+1);
+    int lp=1,rp=0;
+    for(int i=1;i<=q;i++)
     {
-        if(!pr[i]) a++;
-        ln=0,k=0;
-        j=i;
-        while(j!=0)
-        {
-            x[k++]=j%10;
-            j/=10;
-            ln++;
-        }
-        for(k=0;k<ln/2;k++)
-            if(x[k]!=x[ln-1-k]) break;
-        if(k==(ln/2)) b++;
-        if((q*a)<=(p*b))
-            ans=i;
+        while(rp<qs[i].r) add(a[++rp]);
+        while(lp>qs[i].l) add(a[--lp]);
+        while(rp>qs[i].r) del(a[rp--]);
+        while(lp<qs[i].l) del(a[lp++]);
+        ans[qs[i].id]=res;
     }
-    printf("%d\n",ans);
-    return 0;
+    for(int i=1;i<=q;i++)
+        printf("%I64d\n",ans[i]);
 }
 

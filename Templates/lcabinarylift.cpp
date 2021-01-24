@@ -54,9 +54,53 @@ int power( int x, int n)
         return x*power(x,n-1);
 }
 //abcdefghijklmnopqrstuvwxyz//
-const int mx=2000005;
-bool pr[mx];
-int x[15];
+const int mx=405000;
+const int mlg=22;
+
+int n,qn;
+vi g[mx];
+int dp[mx][mlg];
+int tin[mx],tout[mx];
+int timer;
+
+int a[mx];
+int x,y,z;
+
+void dfs(int v,int par=1)
+{
+    timer++;
+    tin[v]=timer;
+    dp[v][0]=par;
+    for(int i=1;i<mlg;i++)
+        dp[v][i]=dp[dp[v][i-1]][i-1];
+    for(int i=0;i<g[v].size();i++)
+    {
+        int to=g[v][i];
+        if(to!=par)
+            dfs(to,v);
+    }
+    timer++;
+    tout[v]=timer;
+}
+
+bool isparent(int a,int b)
+{
+    return tin[a]<=tin[b]&&tout[a]>=tout[b];
+}
+
+int lca(int a,int b)
+{
+    if(isparent(a,b))
+        return a;
+    if(isparent(b,a))
+        return b;
+    for(int i=mlg-1;i>=0;i--)
+    {
+        if(!isparent(dp[a][i],b))
+            a=dp[a][i];
+    }
+    return dp[a][0];
+}
 
 main()
 {
@@ -64,38 +108,20 @@ main()
     freopen("in.txt","r",stdin);
     freopen("out.txt","w",stdout);
     #endif // CP
-    int p=in(),q=in(),ans=1;
-    int a,b,i,j,k=1,ln,t;
-    ln=sqrt(mx)+5;
-    mem(pr,0);
-    for(i=2;i<=ln;i+=k)
+    n=in(),qn=in();
+    int u,v;
+    for(int i=0;i<n-1;i++)
     {
-        if(pr[i]==0){
-                //cout<<i<<endl;
-        for(j=i*i;j<=mx;j+=i)
-            pr[j]=1;
-        }
-        if(i==3) k=2;
+        u=in(),v=in();
+        g[u].pb(v);
+        g[v].pb(u);
     }
-    a=0,b=1;
-    for(i=2;i<=mx;i++)
+    dfs(1);
+    for(int i=1;i<=qn;i++)
     {
-        if(!pr[i]) a++;
-        ln=0,k=0;
-        j=i;
-        while(j!=0)
-        {
-            x[k++]=j%10;
-            j/=10;
-            ln++;
-        }
-        for(k=0;k<ln/2;k++)
-            if(x[k]!=x[ln-1-k]) break;
-        if(k==(ln/2)) b++;
-        if((q*a)<=(p*b))
-            ans=i;
+        u=in(),v=in();
+        x=lca(u,v);
+        printf("%d\n",x);
     }
-    printf("%d\n",ans);
-    return 0;
 }
 

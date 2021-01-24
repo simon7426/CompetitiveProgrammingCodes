@@ -54,9 +54,68 @@ int power( int x, int n)
         return x*power(x,n-1);
 }
 //abcdefghijklmnopqrstuvwxyz//
-const int mx=2000005;
-bool pr[mx];
-int x[15];
+int k,dp[12][2][2][100][100];
+vi dig;
+int fun(int idx,int li,int f,int digsum,int n)
+{
+    if(idx==-1)
+    {
+        if((f==0)&&(digsum==0)&&(n==0))
+            {
+                //printf("%d %d %d %d %d\n",idx,li,f,digsum,n);
+                return 1;
+            }
+        else return 0;
+    }
+    if(dp[idx][li][f][digsum][n]!=-1)
+       return dp[idx][li][f][digsum][n];
+    //printf("%d %d %d %d %d\n",idx,li,f,digsum,n);
+    int ans=0;
+    int i;
+    if(li==1)
+    {
+        for(i=0;i<dig[idx];i++)
+        {
+            if(f==1&&i==0)
+              ans+=fun(idx-1,0,1,digsum,n);
+            else
+                ans+=fun(idx-1,0,0,(digsum+i)%k,(n*10+i)%k);
+        }
+        ans+=fun(idx-1,1,0,(digsum+i)%k,(n*10+i)%k);
+    }
+    else
+    {
+        for(i=0;i<=9;i++)
+        {
+            if(f==1&&i==0)
+              ans+=fun(idx-1,0,1,digsum,n);
+            else
+                ans+=fun(idx-1,0,0,(digsum+i)%k,(n*10+i)%k);
+        }
+    }
+    return dp[idx][li][f][digsum][n]=ans;
+}
+
+int calc(int x)
+{
+    if(x==0) return 0;
+    //printf("%d",x);
+    dig.clear();
+    mem(dp,-1);
+    while(x!=0)
+    {
+        dig.pb(x%10);
+        x/=10;
+    }
+    /*for(int i=0;i<dig.size();i++)
+    {
+        printf("%d ",dig[i]);
+    }
+    printf("\n");*/
+    int ans = fun(dig.size()-1,1,1,0,0);
+    //printf(" %d\n",ans);
+    return ans;
+}
 
 main()
 {
@@ -64,38 +123,19 @@ main()
     freopen("in.txt","r",stdin);
     freopen("out.txt","w",stdout);
     #endif // CP
-    int p=in(),q=in(),ans=1;
-    int a,b,i,j,k=1,ln,t;
-    ln=sqrt(mx)+5;
-    mem(pr,0);
-    for(i=2;i<=ln;i+=k)
+    int tcc=in();
+    for(int tc=1;tc<=tcc;tc++)
     {
-        if(pr[i]==0){
-                //cout<<i<<endl;
-        for(j=i*i;j<=mx;j+=i)
-            pr[j]=1;
-        }
-        if(i==3) k=2;
-    }
-    a=0,b=1;
-    for(i=2;i<=mx;i++)
-    {
-        if(!pr[i]) a++;
-        ln=0,k=0;
-        j=i;
-        while(j!=0)
+        int a=in(),b=in();
+        k=in();
+        //cout<<a<<" "<<b<<endl;
+        if(k>=100)
         {
-            x[k++]=j%10;
-            j/=10;
-            ln++;
+            printf("Case %d: 0\n",tc);
+            continue;
         }
-        for(k=0;k<ln/2;k++)
-            if(x[k]!=x[ln-1-k]) break;
-        if(k==(ln/2)) b++;
-        if((q*a)<=(p*b))
-            ans=i;
+        int ans=calc(b)-calc(a-1);
+        printf("Case %d: %d\n",tc,ans);
     }
-    printf("%d\n",ans);
-    return 0;
 }
 

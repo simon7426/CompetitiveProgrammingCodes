@@ -54,48 +54,81 @@ int power( int x, int n)
         return x*power(x,n-1);
 }
 //abcdefghijklmnopqrstuvwxyz//
-const int mx=2000005;
-bool pr[mx];
-int x[15];
-
+int a[100010];
+map<int,int> m;
 main()
 {
     #ifdef CP
     freopen("in.txt","r",stdin);
     freopen("out.txt","w",stdout);
     #endif // CP
-    int p=in(),q=in(),ans=1;
-    int a,b,i,j,k=1,ln,t;
-    ln=sqrt(mx)+5;
-    mem(pr,0);
-    for(i=2;i<=ln;i+=k)
+    int n=in(),d,i,t;
+    for(i=0;i<n;i++)
+        a[i]=in();
+    sort(a,a+n);
+    if(n==1)
     {
-        if(pr[i]==0){
-                //cout<<i<<endl;
-        for(j=i*i;j<=mx;j+=i)
-            pr[j]=1;
-        }
-        if(i==3) k=2;
+        printf("-1\n");
+        return 0;
     }
-    a=0,b=1;
-    for(i=2;i<=mx;i++)
+    d=1e9;
+    for(i=1;i<n;i++)
     {
-        if(!pr[i]) a++;
-        ln=0,k=0;
-        j=i;
-        while(j!=0)
+       // cout<<a[i]-a[i-1]<<endl;
+        d=min(d,a[i]-a[i-1]);
+        m[a[i]-a[i-1]]++;
+        if(m[a[i]-a[i-1]]==2)
         {
-            x[k++]=j%10;
-            j/=10;
-            ln++;
+            d=a[i]-a[i-1];
+            break;
         }
-        for(k=0;k<ln/2;k++)
-            if(x[k]!=x[ln-1-k]) break;
-        if(k==(ln/2)) b++;
-        if((q*a)<=(p*b))
-            ans=i;
     }
-    printf("%d\n",ans);
-    return 0;
+    int f=0;
+    for(i=1;i<n;i++)
+    {
+        if((a[i-1]+d)!=a[i])
+        {
+            f++;
+            if(a[i-1]+d+d==a[i])
+                t=a[i-1]+d;
+            else
+                t=-1;
+        }
+    }
+    if(f>1)
+    {
+        printf("0\n");
+        return 0;
+    }
+    if(f==0)
+    {
+        if(d==0)
+    {
+        printf("1\n%d\n",a[0]);
+        return 0;
+    }
+        if(n==2)
+        {
+            if(!((a[0]+a[1])&1))
+            {
+                printf("3\n");
+                printf("%d %d %d\n",a[0]-d,(a[0]+a[1])/2,a[1]+d);
+                return 0;
+            }
+        }
+        printf("%d\n",2);
+        printf("%d %d\n",a[0]-d,a[n-1]+d);
+    }
+    if(f==1)
+    {
+        if(t==-1)
+            printf("0\n");
+        else
+            {
+                printf("1\n");
+                printf("%d\n",t);
+            }
+
+    }
 }
 

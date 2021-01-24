@@ -54,9 +54,63 @@ int power( int x, int n)
         return x*power(x,n-1);
 }
 //abcdefghijklmnopqrstuvwxyz//
-const int mx=2000005;
-bool pr[mx];
-int x[15];
+const int mxn=100010;
+char T[mxn];
+int n,ra[mxn],tempra[mxn];
+int sa[mxn],tempsa[mxn];
+int c[mxn];
+int phi[mxn],plcp[mxn],lcp[mxn];
+
+void countsort(int k)
+{
+    int i,sum,maxi=max(n,300);
+    memset(c,0,sizeof c);
+    for(i=0;i<n;i++)
+        c[i + k < n ? ra[i+k] : 0 ]++;
+    for(i=sum=0;i<maxi;i++)
+        {
+            int t=c[i];c[i]=sum;sum+=t;
+        }
+    for(i=0;i<n;i++)
+        tempsa[ c[sa[i]+k<n ? ra[sa[i]+k] : 0 ]++]=sa[i];
+    for(i=0;i<n;i++)
+        sa[i]=tempsa[i];
+}
+
+void consuffixa()
+{
+    int i,k,r;
+    for(i=0;i<n;i++) ra[i]=T[i];
+    for(i=0;i<n;i++) sa[i]=i;
+    for(k=1;k<n;k<<=1)
+    {
+        countsort(k);
+        countsort(0);
+        tempra[sa[0]]=r=0;
+        for(i=1;i<n;i++)
+            tempra[sa[i]]=(ra[sa[i]]==ra[sa[i-1]]&&ra[sa[i]+k]==ra[sa[i-1]+k])? r : ++r;
+        for(i=0;i<n;i++)
+            ra[i]=tempra[i];
+        if(ra[sa[n-1]]==n-1) break;
+    }
+}
+
+void complcp()
+{
+    int i,l;
+    phi[sa[0]]=-1;
+    for(i=1;i<n;i++)
+        phi[sa[i]]=sa[i-1];
+    for(i=l=0;i<n;i++)
+    {
+        if(phi[i]==-1) {plcp[i]=0;continue;}
+        while(T[i+l]==T[phi[i]+l]) l++;
+        plcp[i]=l;
+        l=max(l-1,0);
+    }
+    for(i=0;i<n;i++)
+        lcp[i]=plcp[sa[i]];
+}
 
 main()
 {
@@ -64,38 +118,11 @@ main()
     freopen("in.txt","r",stdin);
     freopen("out.txt","w",stdout);
     #endif // CP
-    int p=in(),q=in(),ans=1;
-    int a,b,i,j,k=1,ln,t;
-    ln=sqrt(mx)+5;
-    mem(pr,0);
-    for(i=2;i<=ln;i+=k)
-    {
-        if(pr[i]==0){
-                //cout<<i<<endl;
-        for(j=i*i;j<=mx;j+=i)
-            pr[j]=1;
-        }
-        if(i==3) k=2;
-    }
-    a=0,b=1;
-    for(i=2;i<=mx;i++)
-    {
-        if(!pr[i]) a++;
-        ln=0,k=0;
-        j=i;
-        while(j!=0)
-        {
-            x[k++]=j%10;
-            j/=10;
-            ln++;
-        }
-        for(k=0;k<ln/2;k++)
-            if(x[k]!=x[ln-1-k]) break;
-        if(k==(ln/2)) b++;
-        if((q*a)<=(p*b))
-            ans=i;
-    }
-    printf("%d\n",ans);
-    return 0;
+    n=(int)strlen(gets(T));
+    T[n++]='$';
+    consuffixa();
+    complcp();
+    for(int i=0;i<n;i++)
+        printf("%2d\t%d\t%s\n",sa[i],lcp[i],T+sa[i]);
 }
 

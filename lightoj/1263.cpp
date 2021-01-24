@@ -32,11 +32,6 @@ const ll infLL = 9000000000000000000;
 #define optimize() ios_base::sync_with_stdio(0);cin.tie(0);cout.tie(0);
 #define fraction() cout.unsetf(ios::floatfield); cout.precision(10); cout.setf(ios::fixed,ios::floatfield);
 
-//int dx[]={1,0,-1,0};int dy[]={0,1,0,-1}; ///4 Direction
-//int dx[]={1,1,0,-1,-1,-1,0,1};int dy[]={0,1,1,1,0,-1,-1,-1};///8 direction
-//int dx[]={2,1,-1,-2,-2,-1,1,2};int dy[]={1,2,2,1,-1,-2,-2,-1};///Knight Direction
-//int dx[]={2,1,-1,-2,-1,1};int dy[]={0,1,1,0,-1,-1}; ///Hexagonal Direction
-
 inline int in() { int x; scanf("%d", &x); return x; }
 inline ll inl() { ll x;scanf("%I64d",&x); return x;}
 inline double ind() { double x;scanf("%lf",&x);return x;}
@@ -54,9 +49,23 @@ int power( int x, int n)
         return x*power(x,n-1);
 }
 //abcdefghijklmnopqrstuvwxyz//
-const int mx=2000005;
-bool pr[mx];
-int x[15];
+int n,m,t,a[1010],vis[1010],cnt,mon;
+vi g[1010];
+set<int> s;
+void dfs(int x)
+{
+    if(vis[x]) return;
+    int i,j;
+    vis[x]=1;
+    cnt++;
+    mon+=a[x];
+    for(i=0;i<g[x].size();i++)
+    {
+        j=g[x][i];
+        if(vis[j])continue;
+        dfs(j);
+    }
+}
 
 main()
 {
@@ -64,38 +73,41 @@ main()
     freopen("in.txt","r",stdin);
     freopen("out.txt","w",stdout);
     #endif // CP
-    int p=in(),q=in(),ans=1;
-    int a,b,i,j,k=1,ln,t;
-    ln=sqrt(mx)+5;
-    mem(pr,0);
-    for(i=2;i<=ln;i+=k)
+    int tcc=in(),tc;
+    for(tc=1;tc<=tcc;tc++)
     {
-        if(pr[i]==0){
-                //cout<<i<<endl;
-        for(j=i*i;j<=mx;j+=i)
-            pr[j]=1;
-        }
-        if(i==3) k=2;
-    }
-    a=0,b=1;
-    for(i=2;i<=mx;i++)
-    {
-        if(!pr[i]) a++;
-        ln=0,k=0;
-        j=i;
-        while(j!=0)
+        int i,j,u,v;
+        for(i=0;i<1010;i++) g[i].clear();
+        mem(vis,0);
+        mem(a,0);
+        s.clear();
+        n=in(),m=in();
+        for(i=1;i<=n;i++)
+            a[i]=in();
+        for(i=0;i<m;i++)
         {
-            x[k++]=j%10;
-            j/=10;
-            ln++;
+            u=in(),v=in();
+            g[u].pb(v);
+            g[v].pb(u);
         }
-        for(k=0;k<ln/2;k++)
-            if(x[k]!=x[ln-1-k]) break;
-        if(k==(ln/2)) b++;
-        if((q*a)<=(p*b))
-            ans=i;
+        int f=1;
+        for(i=1;i<=n;i++)
+        {
+            if(vis[i]) continue;
+            cnt=0;
+            mon=0;
+            dfs(i);
+            if(mon%cnt)
+            {
+                f=0;
+                break;
+            }
+            s.insert(mon/cnt);
+        }
+        printf("Case %d: ",tc);
+        if(f==1&&s.size()==1) printf("Yes\n");
+        else printf("No\n");
     }
-    printf("%d\n",ans);
     return 0;
 }
 

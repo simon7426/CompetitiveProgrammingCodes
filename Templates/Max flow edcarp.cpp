@@ -54,48 +54,84 @@ int power( int x, int n)
         return x*power(x,n-1);
 }
 //abcdefghijklmnopqrstuvwxyz//
-const int mx=2000005;
-bool pr[mx];
-int x[15];
+const int mx=105;
+int cap[mx][mx];
+int flowpass[mx][mx];
+int curcap[mx];
+vi g[mx];
+int p[mx];
 
-main()
+int bfs(int s,int t)
+{
+    mem(p,-1);
+    mem(curcap,0);
+    queue<int> q;
+    p[s]=-2;
+    q.push(s);
+    curcap[s]=1e9;
+    while(!q.empty())
+    {
+        int u=q.front();
+        q.pop();
+        for(int i=0;i<g[u].size();i++)
+        {
+            int v=g[u][i];
+            if(p[v]==-1)
+            {
+
+                if(cap[u][v]-flowpass[u][v]>0)
+                {
+                    p[v]=u;
+                    curcap[v]=min(curcap[u],cap[u][v]-flowpass[u][v]);
+                    if(v==t) return curcap[v];
+                    q.push(v);
+                }
+            }
+        }
+    }
+    return 0;
+}
+
+int maxflow(int s,int t)
+{
+    int mf=0;
+    while(1)
+    {
+        int fl=bfs(s,t);
+        if(fl==0)
+            break;
+        int u=t;
+        mf+=fl;
+        while(u!=s)
+        {
+            int v=p[u];
+            flowpass[v][u]+=fl;
+            flowpass[u][v]-=fl;
+            u=v;
+        }
+    }
+    return mf;
+}
+
+int main()
 {
     #ifdef CP
     freopen("in.txt","r",stdin);
     freopen("out.txt","w",stdout);
     #endif // CP
-    int p=in(),q=in(),ans=1;
-    int a,b,i,j,k=1,ln,t;
-    ln=sqrt(mx)+5;
-    mem(pr,0);
-    for(i=2;i<=ln;i+=k)
+    int n,m,i,j,s,t,u,v,w;
+    scanf("%d %d",&n,&m);
+    scanf("%d %d",&s,&t);
+    for(i=0;i<m;i++)
     {
-        if(pr[i]==0){
-                //cout<<i<<endl;
-        for(j=i*i;j<=mx;j+=i)
-            pr[j]=1;
-        }
-        if(i==3) k=2;
+        scanf("%d %d %d",&u,&v,&w);
+        //cout<<u<<" "<<v<<" "<<w<<endl;
+        cap[u][v]=w;
+        g[u].pb(v);
+        g[v].pb(u);
     }
-    a=0,b=1;
-    for(i=2;i<=mx;i++)
-    {
-        if(!pr[i]) a++;
-        ln=0,k=0;
-        j=i;
-        while(j!=0)
-        {
-            x[k++]=j%10;
-            j/=10;
-            ln++;
-        }
-        for(k=0;k<ln/2;k++)
-            if(x[k]!=x[ln-1-k]) break;
-        if(k==(ln/2)) b++;
-        if((q*a)<=(p*b))
-            ans=i;
-    }
-    printf("%d\n",ans);
+    int mf=maxflow(s,t);
+    printf("%d\n",mf);
     return 0;
 }
 

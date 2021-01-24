@@ -54,48 +54,55 @@ int power( int x, int n)
         return x*power(x,n-1);
 }
 //abcdefghijklmnopqrstuvwxyz//
-const int mx=2000005;
-bool pr[mx];
-int x[15];
-
+int sg[10010],ss[110],vis[10010];
+int s;
+void init()
+{
+    sg[0]=0;
+    for(int k=1;k<10010;k++)
+    {
+        mem(vis,0);
+        for(int i=0;i<s;i++)
+        {
+            if(k-ss[i]>=0)
+            {
+                vis[sg[k-ss[i]]]=1;
+            }
+            else break;
+        }
+        for(int i=0;;i++)
+        {
+            if(vis[i]==0)
+            {
+                sg[k]=i;
+                //printf("%d\n",i);
+                break;
+            }
+        }
+    }
+}
 main()
 {
     #ifdef CP
     freopen("in.txt","r",stdin);
     freopen("out.txt","w",stdout);
     #endif // CP
-    int p=in(),q=in(),ans=1;
-    int a,b,i,j,k=1,ln,t;
-    ln=sqrt(mx)+5;
-    mem(pr,0);
-    for(i=2;i<=ln;i+=k)
+    s=in();
+    for(int i=0;i<s;i++)
+        ss[i]=in();
+    sort(ss,ss+s);
+    init();
+    int q=in();
+    for(int i=0;i<q;i++)
     {
-        if(pr[i]==0){
-                //cout<<i<<endl;
-        for(j=i*i;j<=mx;j+=i)
-            pr[j]=1;
-        }
-        if(i==3) k=2;
-    }
-    a=0,b=1;
-    for(i=2;i<=mx;i++)
-    {
-        if(!pr[i]) a++;
-        ln=0,k=0;
-        j=i;
-        while(j!=0)
+        int n=in();
+        int ans=0;
+        for(int j=0;j<n;j++)
         {
-            x[k++]=j%10;
-            j/=10;
-            ln++;
+            int x=in();
+            ans^=sg[x];
         }
-        for(k=0;k<ln/2;k++)
-            if(x[k]!=x[ln-1-k]) break;
-        if(k==(ln/2)) b++;
-        if((q*a)<=(p*b))
-            ans=i;
+        if(ans) printf("W");
+        else printf("L");
     }
-    printf("%d\n",ans);
-    return 0;
 }
-

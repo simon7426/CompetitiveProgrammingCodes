@@ -1,6 +1,6 @@
 #include<bits/stdc++.h>
 using namespace std;
-
+//#define CP
 typedef long long ll;
 typedef vector<int> vi;
 typedef vector<ll> vl;
@@ -54,48 +54,44 @@ int power( int x, int n)
         return x*power(x,n-1);
 }
 //abcdefghijklmnopqrstuvwxyz//
-const int mx=2000005;
-bool pr[mx];
-int x[15];
-
+ll dp[10010];
+ll ans[10010];
+ll nc(ll x)
+{
+    return (x*(x-1)*(x-2)*(x-3)/24);
+}
 main()
 {
     #ifdef CP
     freopen("in.txt","r",stdin);
     freopen("out.txt","w",stdout);
     #endif // CP
-    int p=in(),q=in(),ans=1;
-    int a,b,i,j,k=1,ln,t;
-    ln=sqrt(mx)+5;
-    mem(pr,0);
-    for(i=2;i<=ln;i+=k)
+    int tcc=in();
+    for(int tc=1;tc<=tcc;tc++)
     {
-        if(pr[i]==0){
-                //cout<<i<<endl;
-        for(j=i*i;j<=mx;j+=i)
-            pr[j]=1;
-        }
-        if(i==3) k=2;
-    }
-    a=0,b=1;
-    for(i=2;i<=mx;i++)
-    {
-        if(!pr[i]) a++;
-        ln=0,k=0;
-        j=i;
-        while(j!=0)
+        mem(dp,0);
+        int n=in();
+        for(int i=0;i<n;i++)
         {
-            x[k++]=j%10;
-            j/=10;
-            ln++;
+            int x=in();
+            for(int j=1;j*j<=x;j++)
+            {
+                if(x%j==0)
+                {
+                    dp[j]++;
+                    if(j*j!=x) dp[x/j]++;
+                }
+            }
         }
-        for(k=0;k<ln/2;k++)
-            if(x[k]!=x[ln-1-k]) break;
-        if(k==(ln/2)) b++;
-        if((q*a)<=(p*b))
-            ans=i;
+        //for(int i=1;i<10;i++) printf("%d ",dp[i]);printf("\n");
+        mem(ans,0);
+        for(int i=10000;i>0;i--)
+        {
+            ans[i]=nc(dp[i]);
+            for(int j=i+i;j<=10000;j+=i) ans[i]-=ans[j];
+        }
+        //for(int i=1;i<10;i++) printf("%lld ",nc(dp[i]));printf("\n");
+        printf("Case %d: %lld\n",tc,ans[1]);
     }
-    printf("%d\n",ans);
-    return 0;
 }
 
